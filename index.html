@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Penegakan Hukum di Indonesia — Presentasi</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1: linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);
+      --card-bg: rgba(255,255,255,0.06);
+      --muted: rgba(255,255,255,0.87);
+      --text:#fff;
+      --max-width:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:var(--bg-1);color:var(--text);-webkit-font-smoothing:antialiased}
+
+    /* container */
+    .slideshow{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+    .slides-wrap{position:relative;width:100%;max-width:var(--max-width);height:calc(100% - 56px)}
+
+    /* BRAND (no frame) - only shown on first slide */
+    .brand {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background: transparent;
+      padding:4px 6px;
+      z-index: 40;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+    .brand.hidden { opacity: 0; transform: translateY(-6px) scale(.98); pointer-events: none; }
+    /* logo container kept overflow visible; no border, no radius */
+    .brand-logo {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow: visible;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      width: auto;
+      height: auto;
+    }
+    /* show logo at natural width but limit height so it doesn't dominate slide */
+    .brand-logo img {
+      display:block;
+      width: auto;
+      height: 36px;           /* limit height while preserving aspect ratio */
+      max-width: 200px;       /* prevent extremely wide logos */
+      object-fit: contain;    /* do not crop */
+      border: 0;
+      box-shadow: none;
+      border-radius: 0;
+      background: transparent;
+    }
+    .brand-text { font-weight:700; font-size:14px; letter-spacing:-0.2px; color:var(--text); }
+
+    .slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transform:translateY(8px) scale(.995);transition:opacity .7s cubic-bezier(.2,.9,.2,1),transform .7s cubic-bezier(.2,.9,.2,1)}
+    .slide.active{opacity:1;pointer-events:auto;transform:none}
+
+    /* layout for slides with illustration */
+    .content-split{display:flex;gap:20px;align-items:stretch;width:100%}
+    .content-left{flex:1;min-width:280px}
+    .content-right{width:360px;flex:0 0 360px;display:flex;align-items:center;justify-content:center}
+    .card{background:var(--card-bg);padding:22px;border-radius:14px;backdrop-filter:blur(8px);box-shadow:0 14px 36px rgba(2,6,23,0.45);color:var(--text)}
+    .card h2{margin:0 0 10px 0;font-size:24px}
+    .card p,.card li{font-size:15px;color:var(--muted);line-height:1.6}
+    .card ul { margin-left:18px; }
+
+    /* --- IMAGES: NO BOX / NO CROP / NO ROUNDED CORNERS --- */
+    .illustration { width:100%; height:220px; overflow:visible; background:transparent; display:flex; align-items:center; justify-content:center; position:relative; border-radius:0; }
+    .illustration img { display:block; width:100%; height:100%; object-fit:cover; border:0; box-shadow:none; border-radius:0; background:transparent; }
+    .mock-placeholder { width:100%; height:200px; overflow:visible; background:transparent; border-radius:0; display:flex; align-items:center; justify-content:center; }
+    .mock-placeholder img { display:block; width:100%; height:100%; object-fit:cover; border:0; box-shadow:none; border-radius:0; }
+
+    .member img { display:block; width:100%; height:140px; object-fit:cover; border:0; box-shadow:none; border-radius:0; background:transparent; }
+
+    /* hero slide */
+    .hero{display:flex;gap:28px;width:100%;align-items:center;justify-content:space-between}
+    .badge{display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.12);backdrop-filter: blur(6px);font-weight:600;font-size:13px}
+    .title{font-size:44px;line-height:1.02;margin:12px 0;font-weight:800}
+    .subtitle{font-size:16px;opacity:.95;margin-bottom:18px;color:var(--muted)}
+    .cta{display:inline-block;padding:12px 20px;border-radius:28px;background:#fff;color:#2575fc;font-weight:800;text-decoration:none}
+    .mock-card{width:100%;overflow:visible;background:transparent;padding:0;margin:0}
+    .mock-top{padding:8px 0 6px 0;font-weight:700;font-size:13px;color:var(--muted);background:transparent}
+    .mock-body{padding:0 0 6px 0;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .mock-note{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+
+    /* closing slide large title */
+    .closing { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
+    .closing .closing-title { font-size:52px; font-weight:800; letter-spacing:-0.6px; text-align:center; color:var(--text); }
+    .closing .closing-sub { margin-top:8px; font-size:18px; color:var(--muted); text-align:center; }
+
+    /* members */
+    .members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px}
+    .member{background:transparent;padding:12px;border-radius:6px;text-align:center}
+    .member .name{font-weight:700;color:var(--text)}
+    .member .role{font-size:13px;color:var(--muted)}
+
+    /* Sumber slide special styling */
+    .sources-list { font-size:15px; color:var(--muted); line-height:1.6; }
+    .sources-list li { margin-bottom:8px; }
+
+    /* controls */
+    .progress{position:absolute;left:28px;bottom:28px;color:rgba(255,255,255,0.95);font-weight:700}
+    .controls{position:absolute;right:28px;bottom:28px;display:flex;gap:10px;align-items:center}
+    .btn{background:rgba(255,255,255,0.08);border:none;padding:8px 12px;border-radius:10px;color:var(--text);cursor:pointer;font-weight:700}
+
+    /* responsive tweaks */
+    @media(max-width:980px){
+      .content-split{flex-direction:column-reverse}
+      .content-right{width:100%;flex-basis:auto}
+      .illustration{height:160px}
+      .hero{flex-direction:column-reverse;gap:18px}
+      .mock-placeholder{height:180px}
+      .brand { left: 10px; top: 10px; padding:6px 8px; gap:8px;}
+      .brand-logo img { height:32px; max-width:160px; }
+      .closing .closing-title { font-size:40px; }
+    }
+    @media(max-width:520px){
+      .title{font-size:26px}
+      .illustration{height:140px}
+      .mock-placeholder{height:140px}
+      .brand-text { display:none; } /* hide brand text on very small screens */
+      .closing .closing-title { font-size:30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slideshow" id="slideshow" tabindex="-1" aria-live="polite">
+    <div class="slides-wrap" id="slidesWrap">
+
+      <!-- Brand (only visible on slide 1) -->
+      <a href="#" id="brand" class="brand hidden" title="Kembali ke awal (klik)" role="button" aria-label="Logo dan nama kelompok">
+        <span class="brand-logo" id="brandLogoContainer">
+          <img src="asset/logoa1.png" alt="Logo" id="brandLogoImg" onerror="brandImgError(this)">
+        </span>
+        <span class="brand-text" id="brandName">Kelompok 8 - Informatika 24</span>
+      </a>
+
+      <!-- Slide 1: Hero -->
+      <section class="slide active" data-index="1" id="slide-1" role="group" aria-label="Slide 1">
+        <div class="hero" style="width:100%">
+          <div class="content-left left">
+            <span class="badge">Tugas Kelompok</span>
+            <div class="title">Penegakan Hukum di Indonesia</div>
+            <div class="subtitle">Disertai 5 Contoh Kasus Nyata</div>
+            <a class="cta" href="#" id="startBtn">Mulai Presentasi →</a>
+            <div style="margin-top:10px;color:var(--muted)">Kelompok 8 • Informatika 24</div>
+          </div>
+
+          <div class="content-right right">
+            <div class="mock-card" title="Ilustrasi / foto">
+              <div class="mock-top"></div>
+              <div class="mock-body">
+                <div class="mock-placeholder" id="heroPlaceholder">
+                  <img id="heroImg" src="asset/fotoa1.png" alt="Ilustrasi Penegakan Hukum" onerror="handleImgError(this)">
+                </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 2: Perkenalan Anggota -->
+      <section class="slide" data-index="2" id="slide-2" role="group" aria-label="Perkenalan Anggota">
+        <div class="card" style="width:100%">
+          <h2>Perkenalan Anggota</h2>
+          <!-- two-row grid: 3 kolom x 2 baris, semua elemen sejajar -->
+          <div class="members-grid" id="membersGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start;text-align:center">
+            <div class="member" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+              <img src="asset/mbah1.png" alt="alfaiq" style="width:120px;height:120px;object-fit:cover;">
+              <div class="name">M ZAINUR RAHMAN .A</div>
+              <div class="role">ppt</div>
+            </div>
+            <div class="member" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+              <img src="asset/aldi.png" alt="aldi" style="width:120px;height:120px;object-fit:cover;">
+              <div class="name">MUHAMMAD ALDI ALMI</div>
+              <div class="role">ppt web</div>
+            </div>
+            <div class="member" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+              <img src="asset/rijal.png" alt="rijal" style="width:120px;height:120px;object-fit:cover;">
+              <div class="name">M. HUBBAN RIJALUL</div>
+              <div class="role">Peneliti</div>
+            </div>
+
+            <div class="member" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+              <img src="asset/tito.png" alt="tito" style="width:120px;height:120px;object-fit:cover;">
+              <div class="name">TITO DWI SAPUTRO</div>
+              <div class="role">MAKALAH</div>
+            </div>
+            <div class="member" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+              <img src="asset/ergi.png" alt="ergi" style="width:120px;height:120px;object-fit:cover;">
+              <div class="name">ESNANG ANARGYA .W</div>
+              <div class="role">makalah</div>
+            </div>
+            <div class="member" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+              <img src="asset/ariel.png" alt="ariel" style="width:120px;height:120px;object-fit:cover;">
+              <div class="name">ARIEL DE LINCOLN .Z </div>
+              <div class="role">Peneliti</div>
+            </div>
+          </div>
+          <p style="margin-top:12px;font-size:13px;color:var(--muted)"> <code></code>.</p>
+        </div>
+      </section>
+
+      <!-- Slide 3..10 with illustrations (images shown with no box/border-radius) -->
+      <section class="slide" data-index="3" id="slide-3" role="group" aria-label="Latar Belakang">
+        <div class="content-split" style="width:100%">
+          <div class="content-left">
+            <div class="card">
+              <h2>Latar Belakang</h2>
+              <p>Penegakan hukum di Indonesia merupakan hal yang fundamental untuk memastikan keadilan, ketertiban, dan kepastian hukum. Dalam menghadapi berbagai tantangan sosial, politik, dan ekonomi, penegakan hukum menjadi kunci untuk menciptakan masyarakat yang beradab dan berkeadilan.</p>
+              <p>Dengan memahami latar belakang ini, kita dapat lebih mengapresiasi pentingnya penegakan hukum yang efektif dan berintegritas.</p>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa2.png" alt="Ilustrasi Latar Belakang" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="4" id="slide-4" role="group" aria-label="Rumusan Masalah">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Rumusan Masalah</h2>
+              <p>Beberapa pertanyaan penting yang perlu dijawab:</p>
+              <ul>
+                <li>Apa definisi dan ruang lingkup penegakan hukum di Indonesia?</li>
+                <li>Faktor apa saja yang mempengaruhi efektivitas penegakan hukum?</li>
+                <li>Bagaimana masyarakat dapat berperan dalam mendukung penegakan hukum?</li>
+                <li>Apa upaya yang diperlukan untuk mengatasi hambatan dalam penegakan hukum?</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa3.png" alt="Ilustrasi Rumusan Masalah" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="5" id="slide-5" role="group" aria-label="Pengertian Penegakan Hukum">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Pengertian Penegakan Hukum</h2>
+              <p>Penegakan hukum adalah proses mewujudkan aturan hukum agar berlaku dan ditaati dalam kehidupan bermasyarakat, berbangsa, dan bernegara. Penegakan hukum tidak hanya dilakukan oleh aparat, tetapi juga melibatkan seluruh warga negara.</p>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa4.png" alt="Ilustrasi Pengertian" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="6" id="slide-6" role="group" aria-label="Tujuan Penegakan Hukum">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Tujuan Penegakan Hukum</h2>
+              <ul>
+                <li>Penegakan hukum adalah proses mewujudkan cita-cita hukum (Soerjono Soekanto, 1983).</li>
+                <li>Melindungi hak asasi manusia.</li>
+                <li>Mewujudkan keadilan sosial.</li>
+                <li>Menjaga ketertiban umum.</li>
+                <li>Mencegah dan menindak pelanggaran.</li>
+                <li>Lembaga Penegak Hukum:Polri, Kejaksaan, KPK, Pengadilan, Komnas HAM, BNN</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa5.png" alt="Ilustrasi Tujuan" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="7" id="slide-7" role="group" aria-label="Faktor Penghambat">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Kasus 1: Korupsi E-KTP</h2>
+              <ul>
+                <li>Tokoh: Setya Novanto (Ketua DPR RI)</li>
+                <li>Kasus: Suap proyek e-KTP Rp5,9 triliun</li>
+                <li>Lembaga: KPK, Kejaksaan, Pengadilan Tipikor</li>
+                <li>Putusan: 15 tahun penjara (Kompas, 2018)</li>
+                <li>Makna: Bukti hukum dapat menjerat pejabat tinggi</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa6.png" alt="Ilustrasi Faktor Penghambat" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="8" id="slide-8" role="group" aria-label="Upaya Perbaikan">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Kasus 2: Pelanggaran HAM (Tragedi Semanggi)</h2>
+              <ul>
+                <li>Peristiwa: 1998–1999, penembakan mahasiswa</li>
+                <li>Lembaga: Komnas HAM, DPR, Kejaksaan</li>
+                <li>Pelatihan integritas bagi aparat.</li>
+                <li>Masalah: Kasus belum tuntas karena faktor politik</li>
+                <li>Makna: Penegakan HAM berat masih lemah (Komnas HAM, 2020)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa7.png" alt="Ilustrasi Upaya Perbaikan" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="9" id="slide-9" role="group" aria-label="Peran Masyarakat">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Kasus 3: Narkotika (Rizky Nazar)</h2>
+              <ul>
+                <li>Peristiwa: Penangkapan aktor Rizky Nazar (2021)</li>
+                <li>Dasar Hukum: UU No. 35/2009 Pasal 127</li>
+                <li>Proses: Rehabilitasi pengguna</li>
+                <li>Makna: Pendekatan rehabilitatif lebih manusiawi (CNN Indonesia, 2021).</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa8.png" alt="Ilustrasi Peran Masyarakat" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="9" id="slide-9" role="group" aria-label="Peran Masyarakat">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Kasus 4: Kekerasan Aparat (Laskar FPI)</h2>
+              <ul>
+                <li>Peristiwa: Penembakan 6 anggota FPI (2020)</li>
+                <li>Lembaga: Komnas HAM, Kepolisian</li>
+                <li>Hasil: Beberapa polisi dihukum ringan (Tempo, 2021)</li>
+                <li>Makna: Butuh reformasi dan transparansi aparat.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa9.png" alt="Ilustrasi Peran Masyarakat" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="9" id="slide-9" role="group" aria-label="Peran Masyarakat">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>Kasus 5: Pencemaran Sungai Kalimantan</h2>
+              <ul>
+                <li>Peristiwa: Limbah tambang mencemari Sungai Santan</li>
+                <li>Lembaga: KLHK, Polisi Kehutanan</li>
+                <li>Sanksi: Denda, pencabutan izin (Mongabay, 2022)</li>
+                <li>Makna: Hukum lingkungan penting untuk hak hidup sehat.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa10.png" alt="Ilustrasi Peran Masyarakat" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-index="10" id="slide-10" role="group" aria-label="Kesimpulan">
+        <div class="content-split">
+          <div class="content-left">
+            <div class="card">
+              <h2>8. Kesimpulan</h2>
+              <p>Penegakan hukum di Indonesia masih menghadapi banyak tantangan.
+                Diperlukan integritas, transparansi, dan reformasi lembaga hukum.
+                Masyarakat harus ikut mengawasi agar hukum berjalan adil.</p>
+            </div>
+          </div>
+
+          <div class="content-right">
+            <div class="illustration">
+              <img src="asset/fotoa2.png" alt="Ilustrasi Kesimpulan" onerror="illustrationError(this)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 11: Penutup (big text) -->
+      <section class="slide" data-index="11" id="slide-11" role="group" aria-label="Penutup">
+        <div class="closing">
+          <div>
+            <div class="closing-title">TERIMA KASIH</div>
+            <div class="closing-sub">maaf kalau ada salah kata</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 12: Sumber -->
+      <section class="slide" data-index="12" id="slide-12" role="group" aria-label="Sumber">
+        <div class="card" style="width:100%">
+          <h2>Daftar Pustaka</h2>
+          <p>Daftar sumber yang digunakan :</p>
+          <ul class="sources-list">
+            <li>Soerjono Soekanto (1983). Faktor-Faktor Penegakan Hukum.</li>
+            <li>UUD 1945, UU No. 48/2009, UU No. 35/2009.</li>
+            <li>Kompas.com (2018), CNN Indonesia (2021), Tempo.co (2021).</li>
+            <li>Mongabay Indonesia (2022),</li>
+            <li>Komnas HAM (2020).</li>
+          </ul>
+
+          <p style="margin-top:12px;color:var(--muted);font-size:13px">
+            © 2024 Kelompok 8 - Informatika 24. Semua hak dilindungi undang-undang.
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="progress" id="progress">1 / 12</div>
+    <div class="controls" aria-hidden="false">
+      <button class="btn" id="prevBtn" title="Sebelumnya">←</button>
+      <button class="btn" id="nextBtn" title="Lanjut">→</button>
+      <button class="btn" id="playPauseBtn" title="Pause/Play">⏸</button>
+    </div>
+  </div>
+
+  <script>
+    // brand image fallback (no framed box) - fallback uses simple initials (no box)
+    function brandImgError(img){
+      try{
+        img.style.display = 'none';
+        const container = document.getElementById('brandLogoContainer');
+        while (container.firstChild) container.removeChild(container.firstChild);
+        const fallback = document.createElement('div');
+        fallback.textContent = 'K8';
+        fallback.style.fontWeight = '800';
+        fallback.style.color = 'rgba(255,255,255,0.9)';
+        fallback.style.background = 'transparent';
+        container.appendChild(fallback);
+      }catch(e){}
+    }
+
+    // hero image fallback (no framed box)
+    function handleImgError(img){
+      try{
+        img.style.display='none';
+        const parent = img.parentElement;
+        let fb = parent.querySelector('.hero-fallback');
+        if (!fb) {
+          fb = document.createElement('div');
+          fb.className = 'hero-fallback';
+          fb.style.color = 'rgba(255,255,255,0.85)';
+          fb.style.fontWeight = '700';
+          fb.style.textAlign = 'center';
+          fb.innerHTML = 'Gagal memuat fotoa1.png';
+          parent.appendChild(fb);
+        }
+      }catch(e){}
+    }
+
+    // illustration fallback (simple text, no framed box)
+    function illustrationError(img){
+      try{
+        img.style.display = 'none';
+        const wrapper = img.parentElement;
+        const alt = document.createElement('div');
+        alt.style.color = 'rgba(255,255,255,0.85)';
+        alt.style.fontWeight = '700';
+        alt.style.textAlign = 'center';
+        alt.textContent = 'Ilustrasi tidak tersedia';
+        wrapper.appendChild(alt);
+      }catch(e){}
+    }
+
+    (function(){
+      function slides() { return Array.from(document.querySelectorAll('.slide')); }
+      const progress = document.getElementById('progress');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const startBtn = document.getElementById('startBtn');
+      const slideshow = document.getElementById('slideshow');
+      const brand = document.getElementById('brand');
+
+      let current = 0;
+      const AUTOPLAY_DELAY = 8000;
+      let autoplay = true;
+      let timer = null;
+
+      function updateBrandVisibility(idx){
+        // show brand ONLY on first slide (index 0)
+        if (brand) {
+          if (idx === 0) {
+            brand.classList.remove('hidden');
+            brand.setAttribute('aria-hidden', 'false');
+          } else {
+            brand.classList.add('hidden');
+            brand.setAttribute('aria-hidden', 'true');
+          }
+        }
+      }
+
+      function show(i){
+        const s = slides();
+        if(s.length === 0) return;
+        if(i < 0) i = s.length - 1;
+        if(i >= s.length) i = 0;
+        s.forEach(sl => sl.classList.remove('active'));
+        s[i].classList.add('active');
+        current = i;
+        progress.textContent = `${i+1} / ${s.length}`;
+        updateBrandVisibility(i);
+      }
+
+      function nextSlide(){ show(current + 1); }
+      function prevSlide(){ show(current - 1); }
+
+      function startAutoplay(){
+        if(timer) clearInterval(timer);
+        if(autoplay) timer = setInterval(()=> nextSlide(), AUTOPLAY_DELAY);
+        playPauseBtn.textContent = autoplay ? '⏸' : '▶';
+      }
+
+      nextBtn.addEventListener('click', ()=>{ autoplay=false; nextSlide(); startAutoplay(); });
+      prevBtn.addEventListener('click', ()=>{ autoplay=false; prevSlide(); startAutoplay(); });
+      playPauseBtn.addEventListener('click', ()=>{ autoplay = !autoplay; startAutoplay(); });
+
+      document.addEventListener('keydown', e=>{
+        if(e.key === 'ArrowRight'){ autoplay=false; nextSlide(); startAutoplay(); }
+        if(e.key === 'ArrowLeft'){ autoplay=false; prevSlide(); startAutoplay(); }
+        if(e.key === 'Home'){ autoplay=false; show(0); startAutoplay(); }
+        if(e.key === 'End'){ autoplay=false; show(slides().length - 1); startAutoplay(); }
+      });
+
+      startBtn.addEventListener('click', (ev)=>{
+        ev.preventDefault();
+        autoplay = true;
+        const s = slides();
+        const slide2 = document.getElementById('slide-2');
+        const idx = slide2 ? s.indexOf(slide2) : 1;
+        show(idx >= 0 ? idx : 1);
+        startAutoplay();
+        slideshow.focus();
+      });
+
+      // brand click returns to first slide
+      brand.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        autoplay = false;
+        show(0);
+        startAutoplay();
+      });
+
+      // pause on hover/focus
+      slideshow.addEventListener('mouseenter', ()=>{ autoplay=false; startAutoplay(); });
+      slideshow.addEventListener('mouseleave', ()=>{ autoplay=true; startAutoplay(); });
+      [prevBtn,nextBtn,playPauseBtn,startBtn,brand].forEach(el=>{
+        el.addEventListener('focus', ()=>{ autoplay=false; startAutoplay(); });
+        el.addEventListener('blur', ()=>{ autoplay=true; startAutoplay(); });
+      });
+
+      // init: show slide 0 and set brand visible only for slide 0
+      show(0);
+      startAutoplay();
+      window.addEventListener('beforeunload', ()=>{ if(timer) clearInterval(timer); });
+    })();
+  </script>
+</body>
+</html>
